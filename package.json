@@ -1,0 +1,64 @@
+{
+  "name": "srwui-scr-driver",
+  "version": "1.0.0",
+  "description": "Update Oct 2021: Now using context isolation for renderer and background threads, see [Enable Context Isolation...](https://www.electronjs.org/docs/latest/tutorial/security#3-enable-context-isolation-for-remote-content) and [Context Isolation](https://www.electronjs.org/docs/latest/tutorial/context-isolation).",
+  "main": "./src/main.js",
+  "icon": "./favicon.ico",
+  "author": {
+    "name": "Nutthapat Piasangka",
+    "email": "n.devs260340@gmail.com",
+    "url": "https://github.com/n-devs"
+  },
+  "keywords": [],
+  "expressPort": 14175,
+  "basePath": ".",
+  "license": "MIT",
+  "private": true,
+  "engines": {
+    "node": ">=14.17.5"
+  },
+  "scripts": {
+    "web": "node src/express-app.js",
+    "start": "electron ./src/main.js",
+    "pack": "electron-packager ./ srwui-scr-driver app-version=1.0 --icon=favicon.ico --out=dist/pack",
+    "build": "node build_installer.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.1",
+    "cookie-parser": "^1.4.6",
+    "debug": "^4.3.4",
+    "ejs": "^3.1.8",
+    "electron-tray-window": "^1.2.7",
+    "express": "^4.18.2",
+    "hex2imagebase64": "^1.0.0",
+    "http-errors": "^2.0.0",
+    "legacy-encoding": "^3.0.0",
+    "morgan": "^1.10.0",
+    "node-fetch": "^2.6.9",
+    "serve-favicon": "^2.5.0",
+    "smartcard": "^1.0.46",
+    "socket.io": "^4.6.1"
+  },
+  "devDependencies": {
+    "electron": "^23.1.1",
+    "electron-builder": "^23.6.0",
+    "electron-installer-windows": "^2.0.0",
+    "electron-packager": "^17.1.1",
+    "electron-wix-msi": "^5.0.0",
+    "exe-icon-extractor": "^1.0.8"
+  },
+  "build": {
+    "win": {
+      "icon": "favicon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ]
+    }
+  }
+}
