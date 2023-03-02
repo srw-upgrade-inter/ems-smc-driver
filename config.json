@@ -1,5 +1,5 @@
 {
 	"dest": "dist/installers/",
-	"icon": "avicon.ico",
+	"icon": "favicon.ico",
 	"tags": ["Utility"]
 }

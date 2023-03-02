@@ -1,6 +1,8 @@
 const electron = require("electron");
+const { spawn } = require("child_process");
+const path = require("path");
 
-const remote = electron.remote;
+const pm2 = path.join(__dirname, path.join("..", "/node/pm2"));
 
 const { BrowserWindow, ipcMain, Menu, Tray } = electron;
 
@@ -54,12 +56,17 @@ function init(options) {
 	});
 
 	tray.on("right-click", function (event) {
-
 		const contextMenu = Menu.buildFromTemplate([
 			{
 				label: "Exit",
 				click: async () => {
-					await window.close()
+					await spawn(pm2, ["delete", "all"], {
+						shell: true,
+					}).stdout.on("data", async (data) => {
+						if (`${data}`) {
+							await window.close();
+						}
+					});
 				},
 			},
 		]);

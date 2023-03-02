@@ -1,21 +1,13 @@
 const { app, globalShortcut, BrowserWindow, ipcMain } = require("electron");
-// const { Readable } =require( "stream");
 const { spawn } = require("child_process");
 const path = require("path");
 const fetch = require("node-fetch");
-const { name } = require("../package.json");
 const trayWindow = require("./electron-tray-window");
 
-const appName = app.getPath("exe");
 const expressAppUrl = "http://localhost:14175";
 let mainWindow = null;
-let tray = undefined;
 
-let expressPath = path.join(__dirname, "express-app.js");
-
-// if (appName.endsWith(`${name}.exe`)) {
-// 	expressPath = path.join("./resources/app.asar", expressPath);
-// }
+const start = path.join(__dirname, path.join("..", "/start.js"));
 
 function redirectOutput(x) {
 	x.on("data", function (data) {
@@ -30,6 +22,7 @@ function redirectOutput(x) {
 						/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
 						""
 					);
+
 					mainWindow.webContents.send("server-log-entry", serverLogEntry);
 				}
 			});
@@ -43,7 +36,8 @@ function registerGlobalShortcuts() {
 }
 
 function createWindow() {
-	const expressAppProcess = spawn("node", [expressPath], {
+	const expressAppProcess = spawn("node", [start], {
+		shell: true,
 		env: {
 			ELECTRON_RUN_AS_NODE: "1",
 		},
@@ -54,8 +48,8 @@ function createWindow() {
 	mainWindow = new BrowserWindow({
 		autoHideMenuBar: true,
 		frame: false,
-		width: 200,
-		height: 240,
+		width: 240,
+		height: 280,
 		icon: path.join(__dirname, path.join("..", "favicon.ico")),
 		webPreferences: {
 			preload: path.join(__dirname, "preload.js"),
@@ -67,7 +61,6 @@ function createWindow() {
 		window: mainWindow,
 	});
 
-
 	mainWindow.on("closed", () => {
 		mainWindow = null;
 		expressAppProcess.kill();
@@ -75,6 +68,7 @@ function createWindow() {
 	mainWindow.on("focus", () => {
 		registerGlobalShortcuts();
 	});
+
 	mainWindow.on("blur", () => {
 		globalShortcut.unregisterAll();
 	});

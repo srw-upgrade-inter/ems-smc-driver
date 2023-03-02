@@ -42,9 +42,12 @@ module.exports.init = (io) => {
 		// console.log(currentDevices);
 		const device = event.device;
 		// console.log(device);
-		console.log(`Device '${device}' activated, devices: ${currentDevices}`);
+		console.log(
+			"device-activated =>",
+			`Device '${device}' activated, devices: ${currentDevices}`
+		);
 		for (const prop in currentDevices) {
-			console.log(`Devices: ${currentDevices[prop]}`);
+			console.log("currentDevices =>", `Devices: ${currentDevices[prop]}`);
 		}
 
 		device.on("card-inserted", async (event) => {
@@ -57,7 +60,7 @@ module.exports.init = (io) => {
 					message,
 				},
 			});
-			console.log(message);
+			console.log("card-inserted =>", message);
 
 			card.on("command-issued", (event) => {
 				const message = `Command '${event.command}' issued to '${event.card}' `;
@@ -68,47 +71,46 @@ module.exports.init = (io) => {
 						message,
 					},
 				});
+				console.log("command-issued =>", message);
 			});
 
 			card.on("response-received", (event) => {
-				const message = `Response '${event.response}' received from '${event.card}' in response to '${event.command}'`;
-
-				io.emit("response-received", {
-					status: 202,
-					description: `Response received`,
-					data: {
-						message,
-					},
-				});
+				console.log(
+					"response-received =>",
+					`Response '${event.response}' received from '${event.card}' in response to '${event.command}'`
+				);
 			});
 
 			try {
 				data = await read(card);
 				if (DEBUG) console.log("Received data", data);
+
 				io.emit("data", {
 					status: 200,
 					description: "Success",
 					data,
 				});
+
+				console.log("device-activated =>", "Success");
 			} catch (ex) {
 				const message = `Exception: ${ex.message}`;
-				console.error(ex);
-				io.emit("error", {
+				console.error("device-activated =>", ex);
+				io.emit("smc-error", {
 					status: 500,
 					description: "Error",
 					data: {
 						message,
 					},
 				});
-				// if (EXIST_WHEN_READ_ERROR) {
-				//   process.exit(); // auto restart handle by pm2
-				// }
+				if (EXIST_WHEN_READ_ERROR) {
+					process.exit(); // auto restart handle by pm2
+				}
 			}
 		});
 		device.on("card-removed", (event) => {
 			const message = `Card removed from '${event.name}'`;
-			console.log(message);
-			io.emit("card-removed", {
+			console.log("card-removed =>", message);
+			io.emit("smc-removed", {
 				status: 205,
 				description: "Card Removed",
 				data: {
@@ -119,8 +121,8 @@ module.exports.init = (io) => {
 
 		device.on("error", (event) => {
 			const message = `Incorrect card input'`;
-			console.log(message);
-			io.emit("error", {
+			console.log("error =>", message);
+			io.emit("smc-incorrect", {
 				status: 400,
 				description: "Incorrect card input",
 				data: {
@@ -132,8 +134,8 @@ module.exports.init = (io) => {
 
 	devices.on("device-deactivated", (event) => {
 		const message = `Device '${event.device}' deactivated, devices: [${event.devices}]`;
-		console.error(message);
-		io.emit("device-deactivated", {
+		console.error("device-deactivated =>", message);
+		io.emit("smc-device-deactivated", {
 			status: 404,
 			description: "Not Found Smartcard Device",
 			data: {
@@ -142,10 +144,10 @@ module.exports.init = (io) => {
 		});
 	});
 
-	devices.on("device-error", (error) => {
+	devices.on("error", (error) => {
 		const message = `${error.error}`;
-		console.error(message);
-		io.emit("error", {
+		console.error("devics-error =>", message);
+		io.emit("smc-error", {
 			status: 404,
 			description: "Not Found Smartcard Device",
 			data: {
