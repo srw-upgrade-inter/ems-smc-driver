@@ -21,7 +21,7 @@ const msiCreator = new MSICreator({
 	// Configure metadata
 	description: pkg.description,
 	exe: pkg.name,
-	name: "Smart Card Reader Driver",
+	name: pkg.name,
 	manufacturer: "SRW Upgrade International.CO.,LTD",
 	version: pkg.version,
 

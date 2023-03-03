@@ -2,8 +2,6 @@ const electron = require("electron");
 const { spawn } = require("child_process");
 const path = require("path");
 
-const pm2 = path.join(__dirname, path.join("..", "/node/pm2"));
-
 const { BrowserWindow, ipcMain, Menu, Tray } = electron;
 
 let tray = undefined;
@@ -60,7 +58,7 @@ function init(options) {
 			{
 				label: "Exit",
 				click: async () => {
-					await spawn(pm2, ["delete", "all"], {
+					await spawn("pm2", ["delete", "all"], {
 						shell: true,
 					}).stdout.on("data", async (data) => {
 						if (`${data}`) {
